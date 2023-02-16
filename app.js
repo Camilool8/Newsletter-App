@@ -1,11 +1,18 @@
 const express = require("express");
 const mailchimp = require("@mailchimp/mailchimp_marketing");
+const dotenv = require("dotenv");
 const app = express();
-const port = 17457;
+
+dotenv.config();
+
+const PORT = process.env.PORT;
+const API_KEY = process.env.API_KEY;
+const SERVER = process.env.SERVER;
+const LIST_ID = process.env.LIST_ID;
 
 mailchimp.setConfig({
-  apiKey: "65ad4836635470d06c8f9b8a06acccb7-us21",
-  server: "us21",
+  apiKey: API_KEY,
+  server: SERVER,
 });
 
 app.use(express.json());
@@ -16,7 +23,7 @@ app.use(express.static(__dirname + "/public"));
 app.get("/", (req, res) => res.sendFile(__dirname + "/signup.html"));
 
 app.post("/", function (req, res) {
-  const listId = "47ec39aaea";
+  const listId = LIST_ID;
   const subscribingUser = {
     firstName: req.body.firstName,
     lastName: req.body.lastName,
@@ -40,6 +47,7 @@ app.post("/", function (req, res) {
 
       res.sendFile(__dirname + "/success.html");
     } catch (e) {
+      console.log(e);
       res.sendFile(__dirname + "/failure.html");
     }
   }
@@ -51,4 +59,4 @@ app.post("/failure", function (req, res) {
   res.redirect("/");
 });
 
-app.listen(port, () => console.log(`Server listening on port ${port}!`));
+app.listen(PORT, () => console.log(`Server listening on port ${PORT}!`));
